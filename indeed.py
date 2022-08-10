@@ -1,6 +1,5 @@
 import csv
 import re
-from webbrowser import Chrome
 import requests
 import cloudscraper
 from bs4 import BeautifulSoup
