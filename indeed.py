@@ -1,12 +1,13 @@
 import csv
 import re
+from traceback import print_tb
 import requests
 import cloudscraper
 from bs4 import BeautifulSoup
 import threading
 import html_text
 from requests_html import HTMLSession
-session = HTMLSession()
+# session = HTMLSession()
 
 tab = None
 tab = "chrome1"
@@ -29,8 +30,9 @@ with open('data_set.csv', 'a', newline='',  encoding='utf-8') as csvfile:
    
     def get_location():
         url = "https://abbreviations.yourdictionary.com/articles/state-abbrev.html"
-        source = session.get(url)
-        soup = BeautifulSoup(source.text, 'html.parser')
+        scraper = cloudscraper.create_scraper(browser={'browser': 'chrome','platform': 'windows','mobile': False})
+        html = scraper.get(url).content
+        soup = BeautifulSoup(html, 'html.parser')
         items = soup.find('tbody').find_all('tr')[1:]
         location = []
         for itm in items:
@@ -41,20 +43,19 @@ with open('data_set.csv', 'a', newline='',  encoding='utf-8') as csvfile:
     def get_pages(q,l):
         pages_number = 0
         for i in range(10):
-            link = f'https://www.indeed.com/jobs?q={q}&l={l}&start=666'
-            session = requests.session()
-            scraper = cloudscraper.create_scraper(sess=session)
+            # link = f'https://www.indeed.com/jobs?q={q}&l={l}&start=666'
+            link = "https://www.indeed.com/jobs?q=Administration&l=USA&start=666"
+            scraper = cloudscraper.create_scraper(browser={'browser': 'chrome','platform': 'windows','mobile': False})
             html = scraper.get(link).content
             soup = BeautifulSoup(html, 'html.parser')
             page = soup.find('nav', class_='css-jbuxu0 ecydgvn0')
-            
             if page == None:
                 pass
             else:
                 pages_number = page.find('button', class_='css-1cpyzlr e8ju0x51').text.strip()
                 return int(pages_number)+1
-        return pages_number
-
+        return 
+ 
     def filter_content(content):
         content = re.sub('\s+', ' ', content)
         return content.strip()
@@ -65,9 +66,9 @@ with open('data_set.csv', 'a', newline='',  encoding='utf-8') as csvfile:
         dict_val = {}
         list_temp = []
         for l in location:
-            print(f"=====> Category: {c} - Location: {l}")
             page = get_pages(c,l)
             temp = temp + page
+            print(f"=====> Category: {c} - Location: {l} - page: {page}")
             if temp < 70:
                 list_temp.append(l)
             else:
