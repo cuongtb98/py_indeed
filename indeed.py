@@ -5,12 +5,12 @@ import cloudscraper
 from bs4 import BeautifulSoup
 import threading
 import html_text
-import time
-import random
 from requests_html import HTMLSession
 session = HTMLSession()
 
 tab = None
+tab = "chrome1"
+category_list = []
 if tab == "chrome1":
     category_list = ["Product Marketing"]
 elif tab == "chrome2":
@@ -20,16 +20,18 @@ elif tab == "chrome3":
 elif tab == "chrome4":
     category_list = ["Design"]
 
+
+
 with open('data_set.csv', 'a', newline='',  encoding='utf-8') as csvfile:
     fieldnames = ['Title', 'Category', 'Content']
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader()
-
+   
     def get_location():
-        url = "https://www23.statcan.gc.ca/imdb/p3VD.pl?Function=getVD&TVD=53971"
+        url = "https://abbreviations.yourdictionary.com/articles/state-abbrev.html"
         source = session.get(url)
         soup = BeautifulSoup(source.text, 'html.parser')
-        items = soup.find('tbody').find_all('tr')
+        items = soup.find('tbody').find_all('tr')[1:]
         location = []
         for itm in items:
             location.append(itm.find('td').text.strip())
@@ -66,7 +68,7 @@ with open('data_set.csv', 'a', newline='',  encoding='utf-8') as csvfile:
             print(f"=====> Category: {c} - Location: {l}")
             page = get_pages(c,l)
             temp = temp + page
-            if temp < 200:
+            if temp < 70:
                 list_temp.append(l)
             else:
                 break
@@ -105,6 +107,7 @@ with open('data_set.csv', 'a', newline='',  encoding='utf-8') as csvfile:
 
 
     Category = process_input()
+
     for ca in Category:
         print(f"----------- {ca} -----------")
         location = Category[ca]["location"]
