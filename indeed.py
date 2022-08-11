@@ -54,7 +54,7 @@ with open('data_set.csv', 'a', newline='',  encoding='utf-8') as csvfile:
             else:
                 pages_number = page.find('button', class_='css-1cpyzlr e8ju0x51').text.strip()
                 return int(pages_number)+1
-        return 
+        return pages_number
  
     def filter_content(content):
         content = re.sub('\s+', ' ', content)
